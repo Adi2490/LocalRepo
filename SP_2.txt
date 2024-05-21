@@ -1,0 +1,27 @@
+CREATE OR REPLACE PROCEDURE Store_P.EXECUTE_NULL_DENSITY_SP()
+BEGIN
+
+DECLARE i INT64 DEFAULT 1;
+DECLARE total_commands INT64;
+DECLARE ddl_command STRING;
+
+
+SET total_commands = (SELECT COUNT(*) FROM Store_P.temp_view);
+
+
+WHILE i <= total_commands DO
+  SET ddl_command = (
+    SELECT DML FROM (
+      SELECT DML, ROW_NUMBER() OVER () AS row_num
+      FROM Store_P.temp_view
+    ) WHERE row_num = i
+  );
+
+
+  EXECUTE IMMEDIATE ddl_command;
+
+
+  SET i = i + 1;
+END WHILE;
+
+END;
