@@ -3,7 +3,7 @@ CREATE OR REPLACE PROCEDURE Store_P.PROCEDURE_NAME()
 BEGIN
 
 
-create or replace view Store_P.temp_view  as (SELECT 'INSERT INTO Store_P.Result_tbl  (Date_Time,Table_Column_nm,Null_count,Not_Null_count) (select current_date, \''||  data_set||'.'||table_nm||'\' as Table_Column_nm, sum(col_1_Null) as Col_Null_Count, sum(col_1_Not_Null) as Col_Not_Null_Count from( select case when ' || column_nm || ' is null then 1 else 0 end as col_1_Null , case when '|| column_nm ||' is not null then 1 else 0 end as col_1_Not_Null from ' ||  data_set||'.'||table_nm||' where ' || condition || '));' as DML
+create or replace view Store_P.temp_view  as (SELECT 'INSERT INTO Store_P.Result_tbl  (Date_Time,Table_Column_nm,Null_count,Not_Null_count,Total_count,Percent_null,Percent_not_null) (select current_date,Table_Column_nm,Col_Null_Count,Col_Not_Null_Count,Tot_count,(Col_Null_Count/Tot_count*100) as Percent_null,(Col_Not_Null_Count/Tot_count*100) as Percent_not_null from (select current_date, \''||  data_set||'.'||table_nm||'.'|| column_nm ||'\' as Table_Column_nm, sum(col_1_Null) as Col_Null_Count, sum(col_1_Not_Null) as Col_Not_Null_Count,count(*) as Tot_count from( select case when ' || column_nm || ' is null then 1 else 0 end as col_1_Null , case when '|| column_nm ||' is not null then 1 else 0 end as col_1_Not_Null from ' ||  data_set||'.'||table_nm||' where ' || condition || ')));' as DML
 FROM dmgcp-del-110.Store_P.driving_table where actv_flg='Y');
 
 END;
